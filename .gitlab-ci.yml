@@ -45,8 +45,9 @@ build:
 
     - tar -xvzf apache-maven-3.6.3-bin.tar.gz
     - tar -xvzf jdk-8u251-linux-x64.tar.gz
-    - ./jdk-8u251-linux-x64/bin/java -version
-    - ./apache-maven-3.6.3-bin/bin/mvn -v
+    - pwd && ls
+    - ./jdk1.8.0_251/bin/java -version
+    - ./apache-maven-3.6.3/bin/mvn -v
     - echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
