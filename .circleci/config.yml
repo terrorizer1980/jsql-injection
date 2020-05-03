@@ -2,10 +2,11 @@ version: 2
 jobs:
   maven/test:
     docker:
-    - image: docker:17.05.0-ce-git
+    # - image: docker:17.05.0-ce-git
+    - image: circleci/openjdk:8u252-jdk
     steps:
     - checkout
-    - setup_remote_docker
+    #setup_remote_docker
     #- run:
     #    name: Generate Cache Checksum
     #    command: find . -name 'pom.xml' | sort | xargs cat > /tmp/maven_cache_seed
@@ -19,8 +20,11 @@ jobs:
     - run:
         name: Install apt-get
         command: |
-            docker info
+            #docker info
             # sudo: not found 
+            yum -h
+            sudo apt-get -h 
+            # apt-get: not found 
             apt-get update -y 
             apt-get upgrade -y 
             apt-get install tightvncserver xfonts-base
