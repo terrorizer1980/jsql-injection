@@ -22,11 +22,10 @@ jobs:
         command: |
             #docker info
             # sudo: not found 
-            sudo apt-get -h 
             # apt-get: not found 
-            apt-get update -y 
-            apt-get upgrade -y 
-            apt-get install tightvncserver xfonts-base
+            sudo apt-get update -y 
+            sudo apt-get upgrade -y 
+            sudo apt-get install tightvncserver xfonts-base
             # setup_remote_docker: command not found
             docker run hello-world
         
