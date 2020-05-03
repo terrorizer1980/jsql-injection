@@ -33,9 +33,10 @@ jobs:
             pwd
             # curl -fsSL https://get.docker.com -o get-docker.sh
             # sh get-docker.sh
-            sudo systemctl restart docker.service
             # setup_remote_docker && setup-docker-engine
             sudo dockerd
+            pwd
+            sudo systemctl restart docker.service
             pwd
             sudo docker network create persistence_backend
             pwd
