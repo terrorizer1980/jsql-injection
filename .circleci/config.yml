@@ -2,68 +2,41 @@ version: 2
 jobs:
   maven/test:
     docker:
-    # - image: docker:17.05.0-ce-git
     - image: circleci/openjdk:8u252-jdk
     steps:
     - checkout
-    #setup_remote_docker
-    #- run:
-    #    name: Generate Cache Checksum
-    #    command: find . -name 'pom.xml' | sort | xargs cat > /tmp/maven_cache_seed
-    #- restore_cache:
-    #    key: maven-{{ checksum "/tmp/maven_cache_seed" }}
-    #    
+
     #- run:
     #    name: Install Dependencies
     #    command: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
+    
+    - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
+        # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
+        key: circleci-jsql-injection-{{ checksum "pom.xml" }}
+    
+    - run: mvn dependency:go-offline # gets the project dependencies
+    
+    - save_cache: # saves the project dependencies
+        paths:
+          - ~/.m2
+        key: circleci-jsql-injection-{{ checksum "pom.xml" }}    
     
     - setup_remote_docker
     
     - run:
         name: Install apt-get
         command: |
-            docker info
-            docker ps
-            docker images
-            # sudo: not found 
-            # apt-get: not found 
+            env | sort
             sudo apt-get update -y 
             sudo apt-get upgrade -y 
             sudo apt-get install tightvncserver xfonts-base iptables-persistent iptables
-            # setup_remote_docker: command not found
-            env | sort
-            # sudo iptables -L -n -t nat
-            # sudo iptables-save > /etc/iptables/rules.v4
-            pwd
             docker -H ${DOCKER_HOST} run hello-world
-            pwd
-            # curl -fsSL https://get.docker.com -o get-docker.sh
-            # sh get-docker.sh
-            # setup_remote_docker && setup-docker-engine
-            export DOCKER_HOST=127.0.0.1
-            pwd
-            sudo groupadd docker
-            pwd
-            sudo usermod -aG docker root
-            pwd
-            sudo service --status-all
-            pwd
-            sudo dockerd
-            pwd
-            sudo systemctl restart docker.service
-            pwd
-            sudo docker network create persistence_backend
-            pwd
+            docker -H ${DOCKER_HOST} ps
+            docker -H ${DOCKER_HOST} images
             docker ps
-            pwd
-            # sudo service start docker
-            # sudo service docker status
-            # sudo service docker start
-            # sudo service docker status
-            # sudo systemctl start docker
-            # docker ps
-            docker run hello-world
-        
+            docker images
+            mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
+    
     - run:
         name: Run Docker
         command: |
@@ -86,6 +59,7 @@ jobs:
     #    key: maven-{{ checksum "/tmp/maven_cache_seed" }}
     #- store_test_results:
     #    path: target/surefire-reports
+    
 workflows:
   maven_test:
     jobs:
