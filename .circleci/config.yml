@@ -30,8 +30,9 @@ jobs:
             env | sort
             # sudo iptables -L -n -t nat
             # sudo iptables-save > /etc/iptables/rules.v4
-            curl -fsSL https://get.docker.com -o get-docker.sh
-            sh get-docker.sh
+            pwd
+            # curl -fsSL https://get.docker.com -o get-docker.sh
+            # sh get-docker.sh
             sudo systemctl restart docker.service
             # setup_remote_docker && setup-docker-engine
             sudo dockerd
