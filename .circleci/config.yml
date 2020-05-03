@@ -35,7 +35,8 @@ jobs:
             # sh get-docker.sh
             # setup_remote_docker && setup-docker-engine
             sudo groupadd docker
-            sudo usermod -aG docker $USER
+            sudo usermod -aG docker root
+            sudo service --status-all
             sudo dockerd
             docker run hello-world
             pwd
