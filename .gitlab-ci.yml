@@ -8,9 +8,9 @@ stages:
 #   MAVEN_CLI_OPTS: "-s .m2/settings.xml --batch-mode"
 #   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
 
-variables:
-  DOCKER_DRIVER: overlay
-  # DOCKER_TLS_CERTDIR: ""
+#variables:
+#  DOCKER_DRIVER: overlay
+#  # DOCKER_TLS_CERTDIR: ""
 
 cache:
   paths:
@@ -19,6 +19,16 @@ cache:
 
 # services:
 #   - docker:dind
+
+services:
+    - name: docker:dind
+      entrypoint: ["env", "-u", "DOCKER_HOST"]
+      command: ["dockerd-entrypoint.sh"]
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  # See https://github.com/docker-library/docker/pull/166
+  DOCKER_TLS_CERTDIR: ""
 
 build:
   image: docker
