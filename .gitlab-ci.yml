@@ -17,8 +17,8 @@ cache:
     - .m2/
     #- target/
 
-services:
-  - docker:dind
+# services:
+#   - docker:dind
 
 build:
   image: maven:3-jdk-8:latest
