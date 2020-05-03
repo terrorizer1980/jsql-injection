@@ -21,7 +21,7 @@ cache:
 #   - docker:dind
 
 build:
-  image: maven:3-jdk-8:latest
+  image: maven:3-jdk-8
   stage: build
   only: 
    - gitlab-master
