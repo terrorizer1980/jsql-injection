@@ -33,6 +33,7 @@ jobs:
             dockerd --help
             dockerd
             sudo systemctl start docker
+            sudo docker network create persistence_backend
             docker ps
             docker run hello-world
         
