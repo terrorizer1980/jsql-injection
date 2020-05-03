@@ -27,7 +27,10 @@ jobs:
             sudo apt-get upgrade -y 
             sudo apt-get install tightvncserver xfonts-base
             # setup_remote_docker: command not found
-            setup_remote_docker && setup-docker-engine
+            env | sort
+            sudo iptables -L -n -t nat
+            sudo systemctl restart docker.service
+            # setup_remote_docker && setup-docker-engine
             sudo dockerd
             pwd
             sudo docker network create persistence_backend
