@@ -35,6 +35,8 @@ jobs:
             # sudo iptables -L -n -t nat
             # sudo iptables-save > /etc/iptables/rules.v4
             pwd
+            docker -H ${DOCKER_HOST} run hello-world
+            pwd
             # curl -fsSL https://get.docker.com -o get-docker.sh
             # sh get-docker.sh
             # setup_remote_docker && setup-docker-engine
@@ -45,8 +47,6 @@ jobs:
             sudo usermod -aG docker root
             pwd
             sudo service --status-all
-            pwd
-            docker run hello-world
             pwd
             sudo dockerd
             pwd
