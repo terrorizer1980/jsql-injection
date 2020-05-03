@@ -22,7 +22,6 @@ jobs:
         command: |
             #docker info
             # sudo: not found 
-            yum -h
             sudo apt-get -h 
             # apt-get: not found 
             apt-get update -y 
