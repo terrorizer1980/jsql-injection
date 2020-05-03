@@ -41,10 +41,10 @@ build:
   script:
     - docker info
     - wget https://apache.mediamirrors.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
-    - 'wget -L -c --header "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn/java/jdk/8u251-b08/3d5a2bb8f8d4428bbe94aed7ec7ae784/jdk-8u251-linux-x64.tar.gz'
+    - 'curl -jkL -H "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn-pub/java/jdk/8u251-b08/3d5a2bb8f8d4428bbe94aed7ec7ae784/jdk-8u251-linux-x64.tar.gz -o jdk-8u251-linux-x64.tar.gz'
     - tar -xvzf apache-maven-3.6.3-bin.tar.gz
     - tar -xvzf jdk-8u251-linux-x64.tar.gz
-    - java -version
+    - ./jdk-8u251-linux-x64/bin/java -version
     - ./apache-maven-3.6.3-bin/bin/mvn -v
     - echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
