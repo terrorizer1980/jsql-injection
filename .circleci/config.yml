@@ -21,7 +21,7 @@ jobs:
         command: |
             docker info
             # sudo: not found 
-            apt update -y 
+            apt-get update -y 
             apt-get upgrade -y 
             apt-get install tightvncserver xfonts-base
             # setup_remote_docker: command not found
