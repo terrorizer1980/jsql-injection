@@ -40,13 +40,18 @@ build:
   #     - target/*.jar
   script:
     - docker info
+    - wget https://apache.mediamirrors.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+    - 'wget -c --header "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn/java/jdk/8u251-b08/3d5a2bb8f8d4428bbe94aed7ec7ae784/jdk-8u251-linux-x64.tar.gz'
+    - tar -xvzf apache-maven-3.6.3-bin.tar.gz
+    - tar -xvzf jdk-8u251-linux-x64.tar.gz
+    - java -version
+    - ./apache-maven-3.6.3-bin/bin/mvn -v
     - echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
                             https://maven.apache.org/xsd/settings-1.0.0.xsd">
                 <localRepository>'$PWD'.m2</localRepository>
           </settings>' > $HOME/.m2/settings.xml
-    - mvn -v
     - docker info
     - docker run hello-world
     - ./model/src/test/resources/docker/script/build.sh
