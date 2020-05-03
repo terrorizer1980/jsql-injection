@@ -30,6 +30,9 @@ jobs:
             # sudo service docker status
             # sudo service docker start
             # sudo service docker status
+            dockerd --help
+            dockerd
+            sudo systemctl start docker
             docker ps
             docker run hello-world
         
