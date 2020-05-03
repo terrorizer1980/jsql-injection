@@ -34,11 +34,17 @@ jobs:
             # curl -fsSL https://get.docker.com -o get-docker.sh
             # sh get-docker.sh
             # setup_remote_docker && setup-docker-engine
+            export DOCKER_HOST=127.0.0.1
+            pwd
             sudo groupadd docker
+            pwd
             sudo usermod -aG docker root
+            pwd
             sudo service --status-all
-            sudo dockerd
+            pwd
             docker run hello-world
+            pwd
+            sudo dockerd
             pwd
             sudo systemctl restart docker.service
             pwd
