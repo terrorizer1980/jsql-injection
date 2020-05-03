@@ -27,6 +27,10 @@ jobs:
             sudo apt-get upgrade -y 
             sudo apt-get install tightvncserver xfonts-base
             # setup_remote_docker: command not found
+            sudo service docker status
+            sudo service docker start
+            sudo service docker status
+            docker ps
             docker run hello-world
         
     - run:
