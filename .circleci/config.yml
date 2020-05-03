@@ -14,7 +14,8 @@ jobs:
         # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
         key: circleci-jsql-injection-{{ checksum "pom.xml" }}
     
-    - run: mvn dependency:go-offline # gets the project dependencies
+    # - run: mvn dependency:go-offline # gets the project dependencies
+    - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
     
     - save_cache: # saves the project dependencies
         paths:
@@ -35,7 +36,6 @@ jobs:
             docker -H ${DOCKER_HOST} images
             docker ps
             docker images
-            mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
     
     - run:
         name: Run Docker
@@ -44,7 +44,7 @@ jobs:
             ./model/src/test/resources/docker/script/run.sh
             ./model/src/test/resources/docker/script/buff.sh
             ./model/src/test/resources/docker/script/verify.sh 
-                   
+           
     #- run:
     #    name: Run Tests
     #    command: ./model/src/test/resources/vnc/execute-on-vnc.sh mvn clean verify
