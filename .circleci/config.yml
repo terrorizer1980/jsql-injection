@@ -19,11 +19,13 @@ jobs:
     - run:
         name: Install apt-get
         command: |
-            sudo apt-get update -y 
-            sudo apt-get upgrade -y 
-            sudo apt-get install tightvncserver xfonts-base
+            docker info
+            # sudo: not found 
+            apt update -y 
+            apt-get upgrade -y 
+            apt-get install tightvncserver xfonts-base
             # setup_remote_docker: command not found
-            sudo docker run hello-world
+            docker run hello-world
         
     - run:
         name: Run Docker
