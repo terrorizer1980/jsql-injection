@@ -16,11 +16,15 @@ jobs:
     #- run:
     #    name: Install Dependencies
     #    command: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
-        
+    
+    - setup_remote_docker
+    
     - run:
         name: Install apt-get
         command: |
-            #docker info
+            docker info
+            docker ps
+            docker images
             # sudo: not found 
             # apt-get: not found 
             sudo apt-get update -y 
