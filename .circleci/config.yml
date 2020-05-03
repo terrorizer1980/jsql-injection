@@ -25,10 +25,11 @@ jobs:
             # apt-get: not found 
             sudo apt-get update -y 
             sudo apt-get upgrade -y 
-            sudo apt-get install tightvncserver xfonts-base
+            sudo apt-get install tightvncserver xfonts-base iptables-persistent
             # setup_remote_docker: command not found
             env | sort
-            sudo iptables -L -n -t nat
+            #sudo iptables -L -n -t nat
+            iptables-save > /etc/iptables/rules.v4
             sudo systemctl restart docker.service
             # setup_remote_docker && setup-docker-engine
             sudo dockerd
