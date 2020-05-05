@@ -31,11 +31,6 @@ jobs:
             sudo apt-get update -y 
             sudo apt-get upgrade -y 
             sudo apt-get install tightvncserver xfonts-base iptables-persistent iptables
-            docker -H ${DOCKER_HOST} run hello-world
-            docker -H ${DOCKER_HOST} ps
-            docker -H ${DOCKER_HOST} images
-            docker ps
-            docker images
     
     - run:
         name: Run Docker
