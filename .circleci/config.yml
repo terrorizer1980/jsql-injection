@@ -17,8 +17,8 @@ jobs:
           - ~/.m2
         key: circleci-jsql-injection-{{ checksum "pom.xml" }}    
     
-    - setup_remote_docker: 
-        docker_layer_caching: true
+    - setup_remote_docker 
+        # docker_layer_caching: true
     
     - run:
         name: Install apt-get
