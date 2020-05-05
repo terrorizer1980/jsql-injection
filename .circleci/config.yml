@@ -6,15 +6,10 @@ jobs:
     steps:
     - checkout
 
-    #- run:
-    #    name: Install Dependencies
-    #    command: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
-    
     - restore_cache: # restore the saved cache after the first run or if `pom.xml` has changed
         # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
         key: circleci-jsql-injection-{{ checksum "pom.xml" }}
     
-    # - run: mvn dependency:go-offline # gets the project dependencies
     - run: mvn -DskipTests clean install dependency:resolve-plugins dependency:go-offline
     
     - save_cache: # saves the project dependencies
@@ -22,7 +17,8 @@ jobs:
           - ~/.m2
         key: circleci-jsql-injection-{{ checksum "pom.xml" }}    
     
-    - setup_remote_docker
+    - setup_remote_docker: 
+        docker_layer_caching: true
     
     - run:
         name: Install apt-get
@@ -39,21 +35,17 @@ jobs:
             ./model/src/test/resources/docker/script/run.sh
             ./model/src/test/resources/docker/script/buff.sh
             ./model/src/test/resources/docker/script/verify.sh 
-           
-    #- run:
-    #    name: Run Tests
-    #    command: ./model/src/test/resources/vnc/execute-on-vnc.sh mvn clean verify
-    #        
-    #- run:
-    #    name: Run Tests
-    #    command: ./model/src/test/resources/docker/script/verify.sh
-    #
-    #- save_cache:
-    #    paths:
-    #    - ~/.m2
-    #    key: maven-{{ checksum "/tmp/maven_cache_seed" }}
-    #- store_test_results:
-    #    path: target/surefire-reports
+
+    - run:
+        name: Run Tests
+        command: ./model/src/test/resources/vnc/execute-on-vnc.sh mvn clean verify
+            
+    - run:
+        name: Run Tests
+        command: ./model/src/test/resources/docker/script/verify.sh
+        
+    - store_test_results:
+        path: target/surefire-reports
     
 workflows:
   maven_test:
