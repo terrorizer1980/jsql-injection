@@ -38,7 +38,10 @@ jobs:
 
     - run:
         name: Run Tests
-        command: ./model/src/test/resources/vnc/execute-on-vnc.sh mvn clean verify
+        command: |
+            export USER=${CIRCLE_USERNAME}
+            export DOCKER_HOST_JSQL=`echo ${DOCKER_HOST} | awk -F[/:] '{print $4}'`
+            ./model/src/test/resources/vnc/execute-on-vnc.sh mvn clean verify
             
     - run:
         name: Run Tests
