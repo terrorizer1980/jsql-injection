@@ -1,30 +1,30 @@
 jobs
 
-docker build -t mysql \
+docker -H ${DOCKER_HOST} build -t mysql \
 -f model/src/test/resources/docker/Dockerfile.mysql . &
 pids[$!]=$!
 
-docker build -t mysql \
+docker -H ${DOCKER_HOST} build -t mysql \
 -f model/src/test/resources/docker/Dockerfile.mysql-5.5.40 . &
 pids[$!]=$!
 
-docker build -t postgres \
+docker -H ${DOCKER_HOST} build -t postgres \
 -f model/src/test/resources/docker/Dockerfile.postgres . &
 pids[$!]=$!
 
-docker build -t sqlserver \
+docker -H ${DOCKER_HOST} build -t sqlserver \
 -f model/src/test/resources/docker/Dockerfile.sqlserver . &
 pids[$!]=$!
 
-docker build -t neo4j \
+docker -H ${DOCKER_HOST} build -t neo4j \
 -f model/src/test/resources/docker/Dockerfile.neo4j . &
 pids[$!]=$!
 
-docker build -t cubrid \
+docker -H ${DOCKER_HOST} build -t cubrid \
 -f model/src/test/resources/docker/Dockerfile.cubrid . &
 pids[$!]=$!
 
-docker build -t db2 \
+docker -H ${DOCKER_HOST} build -t db2 \
 -f model/src/test/resources/docker/Dockerfile.db2 . &
 pids[$!]=$!
 
