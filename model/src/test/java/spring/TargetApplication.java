@@ -192,7 +192,7 @@ public class TargetApplication {
         
         String graphMovie = Files.readAllLines(Paths.get("src/test/resources/neo4j/movie-graph.txt")).stream().collect(Collectors.joining("\n"));
         
-        Driver driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "test"));
+        Driver driver = GraphDatabase.driver("bolt://"+ System.getenv("DOCKER_HOST_JSQL") +":7687", AuthTokens.basic("neo4j", "test"));
         
         try (org.neo4j.driver.Session session = driver.session()) {
             
