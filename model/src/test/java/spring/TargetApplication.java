@@ -1,7 +1,13 @@
 package spring;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
@@ -79,8 +85,23 @@ public class TargetApplication {
         .forEach(simpleEntry -> {
             
             try (InputStream inputStream = classloader.getResourceAsStream(simpleEntry.getValue())) {
+                StringBuilder textBuilder = new StringBuilder();
+                try (Reader reader = new BufferedReader(new InputStreamReader
+                  (inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
+                    int c = 0;
+                    while ((c = reader.read()) != -1) {
+                        textBuilder.append((char) c);
+                    }
+                }
                 
-                simpleEntry.getKey().load(inputStream);
+                String host = System.getenv("DOCKER_HOST_JSQL");
+                System.out.println("####### host");
+                System.out.println(host);
+                String a = textBuilder.toString().replace("${DOCKER_HOST_JSQL}", host);
+                
+                InputStream stream = new ByteArrayInputStream(a.getBytes(StandardCharsets.UTF_8));
+                
+                simpleEntry.getKey().load(stream);
                 
             } catch (IOException e) {
                 
