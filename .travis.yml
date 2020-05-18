@@ -1,41 +1,52 @@
 language: java
 services: docker
-jdk: 
- - openjdk8
- - openjdk9
- - openjdk10
- - openjdk12
- - openjdk13
- # Keep concurrent jdk lower than Travis max job count of 5
- # - openjdk11
- # Need new version of gmavenplus-plugin
- # - openjdk14
+
+# jdk: 
+#  - openjdk8
+#  - openjdk9
+#  - openjdk10
+#  - openjdk12
+#  - openjdk13
+#  # Keep concurrent jdk lower than Travis max job count of 5
+#  # - openjdk11
+#  # Need new version of gmavenplus-plugin
+#  # - openjdk14
+
+jobs:
+  include:
+  - env: MAVEN_NASHORN=
+    env: JSQL_DOCKERFILE=Dockerfile-jdk8.jsql
+  - env: MAVEN_NASHORN="--no-deprecation-warning"
+    env: JSQL_DOCKERFILE=Dockerfile-jdk9.jsql
+  - env: MAVEN_NASHORN="--no-deprecation-warning"
+    env: JSQL_DOCKERFILE=Dockerfile-jdk10.jsql
+  - env: MAVEN_NASHORN="--no-deprecation-warning"
+    env: JSQL_DOCKERFILE=Dockerfile-jdk11.jsql
+  - env: MAVEN_NASHORN="--no-deprecation-warning"
+    env: JSQL_DOCKERFILE=Dockerfile-jdk12.jsql
+  - env: MAVEN_NASHORN="--no-deprecation-warning"
+    env: JSQL_DOCKERFILE=Dockerfile-jdk13.jsql
+  - env: MAVEN_NASHORN="--no-deprecation-warning"
+    env: JSQL_DOCKERFILE=Dockerfile-jdk14.jsql
+  - env: MAVEN_NASHORN="--no-deprecation-warning"
+    env: JSQL_DOCKERFILE=Dockerfile-jdk15.jsql
 
 branches:
   only:
   - master
+  - master-docker
   
-env:
-  global:
-    # Disable Oracle in the cloud
-    - FROM_TRAVIS=true
-    
 addons:
   sonarcloud:
     organization: ron190-github
     token:
       secure: Fi8pYQTRDsIzBBKPTLHcAxkm0l0JcrZZvADbhwWG95lqKgtEtGI0OzWB5nFUBiOu5N20yrMPz/x4BUTyqr61xZiOocB9SH5ya4jqlraIlQW3WPH0enZ7e/g/JmqiAttuhzic7s12XQR5VwvAbG7ZkHa41liJ0nTd8HiLG7TOPep0hVTX/VZ/+K1B0FMJJVsMNMfhDsrtegxLryoeCSuKpwiAXXN2GkTtV2g1o1fxSmFMb0cepC/03Hskfp4ZxnHaY9yQfJISulTuxv9EUy5ecQZj+btf+QB3iNAwNFIE/xC6VeuCSrTJ01kG9w9DvY3W6z9NywxVHL5fJNDHcWsIz6/FpdNZgwxw6hIBQOimSa2/oXrPNyNR/bUyu6kQMFitDXWNxZj56yicqduNc46ni9NjsavCMlTJrdh/MYKB+C8e2IVa11QT988iTZo5C7MjUqUJU4gKBgdcn0jGZb20pxd7/Gtf4uMz7tp9mQRCTXpV6OSE85phwezledPud1f7/TG/QBrzZCL3YTMLhrDLhiratHweitPpr3da2+HrjSkdmunGdyufB+bseJP68ghjG5QpYBakjkJgkGYXd+S/r1NHmsGhbuk3/S0WtoYRhlAaBl3U8c7z8/lBcPhNbkQmfjIMolTjVdK61rQSads1b3kgVcImsux0IxEhUjowqag=
-  apt:
-    packages:
-      # UI tests
-      - tightvncserver
-      - xfonts-base
     
 cache:
   directories:
     - $HOME/.m2
     - $HOME/.sonar/cache
-    
+
 before_script:
 
   - env | sort
@@ -43,19 +54,31 @@ before_script:
   - java -XX:+PrintFlagsFinal -version | grep -iE 'HeapSize|PermSize|ThreadStackSize'
   
   # git update-index --chmod=+x <file>
-  - ./model/src/test/resources/docker/script/build.sh
-  - ./model/src/test/resources/docker/script/run.sh
+  - docker-compose -f ./model/src/test/resources/docker/docker-compose.yml build --parallel
+  - docker-compose -f ./model/src/test/resources/docker/docker-compose.yml up -d
+  - ./model/src/test/resources/docker/healthcheck/healthcheck.sh
   - ./model/src/test/resources/docker/script/buff.sh
   - ./model/src/test/resources/docker/script/verify.sh
+  
+  - docker rmi jsql:latest -f
+  - docker build -t jsql:latest -f model/src/test/resources/docker/${JSQL_DOCKERFILE} .
 
 script:
 
-  - ./model/src/test/resources/vnc/execute-on-vnc.sh mvn clean verify sonar:sonar
+  - docker run 
+    -v "$HOME/.m2":/root/.m2 
+    -v "$HOME/.sonar/cache":/root/.sonar/cache
+    -e "SONARQUBE_SCANNER_PARAMS=${SONARQUBE_SCANNER_PARAMS}"
+    -e "SONAR_TOKEN=${SONAR_TOKEN}"
+    --network docker_jsql-network 
+    jsql:latest 
+    ./model/src/test/resources/vnc/execute-on-vnc.sh 
+    mvn clean verify sonar:sonar
   - ./model/src/test/resources/docker/script/verify.sh
-    
-after_success:
-
-  - bash <(curl -s https://codecov.io/bash)
   
-  - export CODACY_PROJECT_TOKEN=43e8b6719fbc4f3cbef25d863d7440c8
-  - bash <(curl -Ls https://coverage.codacy.com/get.sh)
+# after_success:
+
+  # - bash <(curl -s https://codecov.io/bash)
+  # 
+  # - export CODACY_PROJECT_TOKEN=43e8b6719fbc4f3cbef25d863d7440c8
+  # - bash <(curl -Ls https://coverage.codacy.com/get.sh)
