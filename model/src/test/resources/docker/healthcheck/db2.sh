@@ -4,7 +4,7 @@ set -e
 
 retry=0
 
-until cat <<EOF | docker exec -i --workdir /database/config/db2inst1/sqllib/bin --user db2inst1 jsql-db2 /bin/bash     
+until cat <<EOF | docker exec -i --workdir /database/config/db2inst1/sqllib/bin --user db2inst1 jsql-db2 /bin/bash
     
     pwd
     export DB2INST1_PASSWORD=test

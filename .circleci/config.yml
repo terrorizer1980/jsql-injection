@@ -34,10 +34,7 @@ jobs:
         name: Run Tests
         command: |
             docker run                                                    \
-                -v "$HOME/.m2":/root/.m2                                  \
-                -v "$HOME/.sonar/cache":/root/.sonar/cache                \
-                -e "SONARQUBE_SCANNER_PARAMS=${SONARQUBE_SCANNER_PARAMS}" \
-                -e "SONAR_TOKEN=${SONAR_TOKEN}"                           \
+                -v "~/.m2":/root/.m2                                      \
                 --network docker_jsql-network                             \
                 jsql:latest                                               \
                 ./model/src/test/resources/vnc/execute-on-vnc.sh          \
@@ -48,7 +45,7 @@ jobs:
         command: ./model/src/test/resources/docker/script/verify.sh
         
     - store_test_results:
-        path: target/surefire-reports
+        path: model/target/surefire-reports
     
 workflows:
   maven_test:
