@@ -18,33 +18,34 @@ jobs:
         key: circleci-jsql-injection-{{ checksum "pom.xml" }}    
     
     - setup_remote_docker 
-        # docker_layer_caching: true
-    
-    - run:
-        name: Install apt-get
-        command: |
-            env | sort
-            sudo apt-get update -y 
-            sudo apt-get upgrade -y 
-            sudo apt-get install tightvncserver xfonts-base iptables-persistent iptables
     
     - run:
         name: Run Docker
         command: |
-            ./model/src/test/resources/docker/script/build.sh
-            ./model/src/test/resources/docker/script/run.sh
+            docker-compose -f ./model/src/test/resources/docker/docker-compose.yml build --parallel
+            docker-compose -f ./model/src/test/resources/docker/docker-compose.yml up -d
+            ./model/src/test/resources/docker/healthcheck/healthcheck.sh
             ./model/src/test/resources/docker/script/buff.sh
-            ./model/src/test/resources/docker/script/verify.sh 
-
+            ./model/src/test/resources/docker/script/verify.sh
+            
+            - docker rmi jsql:latest -f
+            - docker build -t jsql:latest -f model/src/test/resources/docker/Dockerfile.jsql .
+  
     - run:
         name: Run Tests
         command: |
-            export USER=${CIRCLE_USERNAME}
-            export DOCKER_HOST_JSQL=`echo ${DOCKER_HOST} | awk -F[/:] '{print $4}'`
-            ./model/src/test/resources/vnc/execute-on-vnc.sh mvn clean verify
+            docker run                                                    \
+                -v "$HOME/.m2":/root/.m2                                  \
+                -v "$HOME/.sonar/cache":/root/.sonar/cache                \
+                -e "SONARQUBE_SCANNER_PARAMS=${SONARQUBE_SCANNER_PARAMS}" \
+                -e "SONAR_TOKEN=${SONAR_TOKEN}"                           \
+                --network docker_jsql-network                             \
+                jsql:latest                                               \
+                ./model/src/test/resources/vnc/execute-on-vnc.sh          \
+                mvn clean verify
             
     - run:
-        name: Run Tests
+        name: Verify Tests
         command: ./model/src/test/resources/docker/script/verify.sh
         
     - store_test_results:
