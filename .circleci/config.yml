@@ -27,9 +27,8 @@ jobs:
             ./model/src/test/resources/docker/healthcheck/healthcheck.sh
             ./model/src/test/resources/docker/script/buff.sh
             ./model/src/test/resources/docker/script/verify.sh
-            
-            - docker rmi jsql:latest -f
-            - docker build -t jsql:latest -f model/src/test/resources/docker/Dockerfile.jsql .
+            docker rmi jsql:latest -f
+            docker build -t jsql:latest -f model/src/test/resources/docker/Dockerfile.jsql .
   
     - run:
         name: Run Tests
