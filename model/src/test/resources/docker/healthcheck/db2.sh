@@ -4,8 +4,7 @@ set -e
 
 retry=0
 
-until cat <<EOF | docker exec -i --workdir /database/config/db2inst1/sqllib/bin --user db2inst1 jsql-db2 bash
-    
+until cat <<EOF | docker exec -i -w /database/config/db2inst1/sqllib/bin -u db2inst1 jsql-db2 bash
     pwd
     export DB2INST1_PASSWORD=test
     export DB2INSTANCE=db2inst1
@@ -19,7 +18,7 @@ until cat <<EOF | docker exec -i --workdir /database/config/db2inst1/sqllib/bin 
 EOF
 do
   retry=$((retry+1))
-  if [ $retry -gt 60 ] ; then
+  if [ $retry -gt 10 ] ; then
     exit 1
   fi
   
