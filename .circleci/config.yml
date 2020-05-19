@@ -33,12 +33,17 @@ jobs:
     - run:
         name: Run Tests
         command: |
-            docker run                                                    \
-                -v "$HOME/.m2":/root/.m2                                  \
-                --network docker_jsql-network                             \
-                jsql:latest                                               \
-                ./model/src/test/resources/vnc/execute-on-vnc.sh          \
+            docker run                                           \
+                -v "$HOME/.m2":/root/.m2                         \
+                --network docker_jsql-network                    \
+                jsql:latest                                      \
+                ./model/src/test/resources/vnc/execute-on-vnc.sh \
                 mvn clean verify
+    
+    - save_cache: # saves the project dependencies
+        paths:
+          - $HOME/.m2
+        key: circleci-jsql-injection-{{ checksum "pom.xml" }}    
             
     - run:
         name: Verify Tests
