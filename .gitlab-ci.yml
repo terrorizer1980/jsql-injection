@@ -1,4 +1,6 @@
-image: docker:git
+image:
+  name: docker/compose:latest
+  entrypoint: ["/bin/sh", "-c"]
 
 stages:
   - build
@@ -12,6 +14,10 @@ stages:
 #  DOCKER_DRIVER: overlay
 #  # DOCKER_TLS_CERTDIR: ""
 
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
 cache:
   paths:
     - .m2/
@@ -21,17 +27,24 @@ cache:
 #   - docker:dind
 
 services:
-    - name: docker:dind
-      entrypoint: ["env", "-u", "DOCKER_HOST"]
-      command: ["dockerd-entrypoint.sh"]
-variables:
-  DOCKER_HOST: tcp://docker:2375/
-  DOCKER_DRIVER: overlay2
-  # See https://github.com/docker-library/docker/pull/166
-  DOCKER_TLS_CERTDIR: ""
+  - docker:dind
+  
+# services:
+#     - name: docker:dind
+#       entrypoint: ["env", "-u", "DOCKER_HOST"]
+#       command: ["dockerd-entrypoint.sh"]
+# variables:
+#   DOCKER_HOST: tcp://docker:2375/
+#   DOCKER_DRIVER: overlay2
+#   # See https://github.com/docker-library/docker/pull/166
+#   DOCKER_TLS_CERTDIR: ""
 
+before_script:
+  - docker version
+  - docker-compose version
+  
 build:
-  image: docker
+  # image: docker
   stage: build
   only: 
    - gitlab-master
