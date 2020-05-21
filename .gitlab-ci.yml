@@ -61,13 +61,10 @@ build:
     - ./model/src/test/resources/docker/script/verify.sh
     
     - docker rmi jsql:latest -f
-    - docker build -t jsql:latest -f model/src/test/resources/docker/${JSQL_DOCKERFILE} . 
+    - docker build -t jsql:latest -f model/src/test/resources/docker/Dockerfile.jsql . 
     
     - docker run 
       -v "$HOME/.m2":/root/.m2 
-      -v "$HOME/.sonar/cache":/root/.sonar/cache
-      -e "SONARQUBE_SCANNER_PARAMS=${SONARQUBE_SCANNER_PARAMS}"
-      -e "SONAR_TOKEN=${SONAR_TOKEN}"
       --network docker_jsql-network 
       jsql:latest 
       ./model/src/test/resources/vnc/execute-on-vnc.sh 
