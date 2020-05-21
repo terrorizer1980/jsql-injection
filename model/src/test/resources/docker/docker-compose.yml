@@ -13,17 +13,17 @@ services:
     networks:
       - jsql-network
       
-  mysql-5-5-40:
-    ports: 
-      - 3307:3307
-    build:
-      context: .
-      dockerfile: Dockerfile.mysql-5-5-40
-    environment:
-      MYSQL_ROOT_PASSWORD: my-secret-pw
-    container_name: jsql-mysql-5-5-40
-    networks:
-      - jsql-network
+  # mysql-5-5-40:
+  #   ports: 
+  #     - 3307:3307
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile.mysql-5-5-40
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: my-secret-pw
+  #   container_name: jsql-mysql-5-5-40
+  #   networks:
+  #     - jsql-network
 
   postgres:
     ports: 
