@@ -40,38 +40,59 @@ build:
   #     - target/*.jar
   script:
     - docker info
-    - wget https://apache.mediamirrors.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz 
-    - 'wget --header "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn-pub/java/jdk/8u251-b08/3d5a2bb8f8d4428bbe94aed7ec7ae784/jdk-8u251-linux-x64.tar.gz'
-
-    - tar -xvzf apache-maven-3.6.3-bin.tar.gz
-    - tar -xvzf jdk-8u251-linux-x64.tar.gz
-    - pwd && ls -l && ls -l jdk1.8.0_251 && ls -l apache-maven-3.6.3
-    - ls -l jdk1.8.0_251/bin && ls -l apache-maven-3.6.3/bin
-    - cd jdk1.8.0_251/bin 
-    - java -version
-    - cd ../..
-    - cd jdk1.8.0_251/bin && java -version
-    - cd ../..
-    - jdk1.8.0_251/bin/java -version
-    - cd apache-maven-3.6.3/bin
-    - mvn -v
-    - cd ../..
-    - cd apache-maven-3.6.3/bin && mvn -v
-    - cd ../..
-    - apache-maven-3.6.3/bin/mvn -v
-    - echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
-                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                    xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
-                            https://maven.apache.org/xsd/settings-1.0.0.xsd">
-                <localRepository>'$PWD'.m2</localRepository>
-          </settings>' > $HOME/.m2/settings.xml
-    - docker info
-    - docker run hello-world
-    - ./model/src/test/resources/docker/script/build.sh
-    - ./model/src/test/resources/docker/script/run.sh
+    
+    - docker-compose -f ./model/src/test/resources/docker/docker-compose.yml build --parallel
+    - docker-compose -f ./model/src/test/resources/docker/docker-compose.yml up -d
+    - ./model/src/test/resources/docker/healthcheck/healthcheck.sh
     - ./model/src/test/resources/docker/script/buff.sh
-    - ./model/src/test/resources/docker/script/verify.sh   
-    - mvn clean install -DskipTests
+    - ./model/src/test/resources/docker/script/verify.sh
+    
+    - docker rmi jsql:latest -f
+    - docker build -t jsql:latest -f model/src/test/resources/docker/${JSQL_DOCKERFILE} . 
+    
+    - docker run 
+      -v "$HOME/.m2":/root/.m2 
+      -v "$HOME/.sonar/cache":/root/.sonar/cache
+      -e "SONARQUBE_SCANNER_PARAMS=${SONARQUBE_SCANNER_PARAMS}"
+      -e "SONAR_TOKEN=${SONAR_TOKEN}"
+      --network docker_jsql-network 
+      jsql:latest 
+      ./model/src/test/resources/vnc/execute-on-vnc.sh 
+      mvn clean verify sonar:sonar
+    - ./model/src/test/resources/docker/script/verify.sh       
+    
+    # - wget https://apache.mediamirrors.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz 
+    # - 'wget --header "Cookie: oraclelicense=accept-securebackup-cookie" https://download.oracle.com/otn-pub/java/jdk/8u251-b08/3d5a2bb8f8d4428bbe94aed7ec7ae784/jdk-8u251-linux-x64.tar.gz'
+    # 
+    # - tar -xvzf apache-maven-3.6.3-bin.tar.gz
+    # - tar -xvzf jdk-8u251-linux-x64.tar.gz
+    # - pwd && ls -l && ls -l jdk1.8.0_251 && ls -l apache-maven-3.6.3
+    # - ls -l jdk1.8.0_251/bin && ls -l apache-maven-3.6.3/bin
+    # - cd jdk1.8.0_251/bin 
+    # - java -version
+    # - cd ../..
+    # - cd jdk1.8.0_251/bin && java -version
+    # - cd ../..
+    # - jdk1.8.0_251/bin/java -version
+    # - cd apache-maven-3.6.3/bin
+    # - mvn -v
+    # - cd ../..
+    # - cd apache-maven-3.6.3/bin && mvn -v
+    # - cd ../..
+    # - apache-maven-3.6.3/bin/mvn -v
+    # - echo '<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+    #                 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    #                 xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+    #                         https://maven.apache.org/xsd/settings-1.0.0.xsd">
+    #             <localRepository>'$PWD'.m2</localRepository>
+    #       </settings>' > $HOME/.m2/settings.xml
+    # - docker info
+    # - docker run hello-world
+    # - ./model/src/test/resources/docker/script/build.sh
+    # - ./model/src/test/resources/docker/script/run.sh
+    # - ./model/src/test/resources/docker/script/buff.sh
+    # - ./model/src/test/resources/docker/script/verify.sh   
+    # - mvn clean install -DskipTests
 
 #before_script:
 #  - apt-get update -y 
