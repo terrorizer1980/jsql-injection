@@ -15,11 +15,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    
     - uses: actions/checkout@v2
     - name: Set up JDK 1.8
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+    
+    - uses: actions/cache@v1
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
+              
     - name: Build with Maven
 #      run: mvn -B package --file pom.xml
-      run: mvn clean install -DskipITs -DskipTests dependency:tree --file pom.xml
+      run: |
+        docker version
+        mvn clean install -DskipITs -DskipTests dependency:tree --file pom.xml
+
+        env | sort
+        sudo cat /proc/meminfo
+        java -XX:+PrintFlagsFinal -version | grep -iE 'HeapSize|PermSize|ThreadStackSize'
+        
+        # git update-index --chmod=+x <file>
+        docker-compose -f ./model/src/test/resources/docker/docker-compose.yml build --parallel
+        docker-compose -f ./model/src/test/resources/docker/docker-compose.yml up -d
+        ./model/src/test/resources/docker/healthcheck/healthcheck.sh
+        ./model/src/test/resources/docker/script/buff.sh
+        ./model/src/test/resources/docker/script/verify.sh
+        
+        docker rmi jsql:latest -f
+        docker build -t jsql:latest --build-arg JSQL_DOCKERFILE=${JSQL_DOCKERFILE} -f model/src/test/resources/docker/Dockerfile.jsql .
+        
+        docker run                                                  ^
+          -v "$HOME/.m2":/root/.m2                                  ^
+          -v "$HOME/.sonar/cache":/root/.sonar/cache                ^
+          -e "SONARQUBE_SCANNER_PARAMS=${SONARQUBE_SCANNER_PARAMS}" ^
+          -e "SONAR_TOKEN=${SONAR_TOKEN}"                           ^
+          --network docker_jsql-network                             ^
+          jsql:latest                                               ^
+          ./model/src/test/resources/vnc/execute-on-vnc.sh          ^
+          mvn clean verify sonar:sonar
+          
+        ./model/src/test/resources/docker/script/verify.sh
